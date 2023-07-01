@@ -1,13 +1,13 @@
 import React from 'react';
 
-function ProductCard({product, setSelectedProduct}) {
+function ProductCard({product, setSelectedProduct,setScrollableModal}) {
     function getDiscount(newPrice, oldPrice){
         var diff = oldPrice - newPrice;
         return Math.round(diff*100/oldPrice);
     }
   return (
         <div className="col">
-            <div className="card custom-card shadow-sm" onClick={() => setSelectedProduct(product)}>
+            <div className="card custom-card shadow-sm" onClick={() => {setSelectedProduct(product); setScrollableModal(true);}}>
                 { product.variant_price < product.variant_compare_at_price ?
                     <p className="badge bg-dim text-white position-absolute"
                             style={{ bottom: "10rem", right: "0.5rem" }}>

@@ -3,7 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDollarSign } from '@fortawesome/fontawesome-free-solid';
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
-
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Product({cart, setCart, productInfo}) {
 
@@ -11,7 +12,6 @@ function Product({cart, setCart, productInfo}) {
     const [loaded, setLoaded] = useState(false);
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedQuantity, setSelectedQuantity] = useState(1);
-    
 
     const fetchProductData = (product_id) => {
       fetch("http://3.86.87.11:8080/getProductDetails/" + product_id)
@@ -43,10 +43,12 @@ function Product({cart, setCart, productInfo}) {
         newCartItem = {size:selectedSize, quantity:parseInt(selectedQuantity), image:product.images.split('|')[0], title:product.title, price:product.variant_price};
       }
       setCart((prev)=>({...prev , [productSku]:newCartItem}));
+      toast.success("Added to cart !",{autoClose:1000});
     }
 
     return (
       <div key={product.product_id} className="product-modal-view">
+        <ToastContainer />
         {loaded &&
         <div className='row'>
         <div className="col-lg-6 product-modal-images">
