@@ -3,6 +3,7 @@ import ProductsView from './ProductsView';
 import FilterView from './FilterView';
 import Cart from './Cart';
 
+
 import {
   MDBBtn,
   MDBModal,
@@ -31,8 +32,6 @@ function ModalCart({showCart,setShowCart,cart,setCart}) {
             </MDBModalHeader>
             <MDBModalBody>
               <Cart cart={cart} setCart={setCart}/>
-              {console.log("cart2")}
-              {console.log(cart)}
             </MDBModalBody>
           </MDBModalContent>
         </MDBModalDialog>
@@ -70,14 +69,12 @@ function Content({showCart, setShowCart,searchString}) {
   }
   
   useEffect(() => {
-    console.log("AA");
     fetchProductsData(1,{},"");
     setPageNo(1);
   },[]);
 
   useEffect(() => {
     fetchProductsData(1,filters,searchString);
-    console.log("AA");
     setPageNo(1);
     
     if(searchString !== ''){  
@@ -89,12 +86,10 @@ function Content({showCart, setShowCart,searchString}) {
   },[searchString,filters]);
 
   useEffect(() => {
-    console.log("AA");
     fetchProductsData(1,filters,searchString);
   },[filters,searchString]);
 
   useEffect(() => {
-    console.log("AA");
     window.scrollTo(0, 0);
   }, [pageNo]);
 

@@ -32,12 +32,12 @@ function FilterView({updateFilters}) {
       if(checked){
           setFilters((prev) => { prev[filter].add(v); return {...prev};});
         } else {
-          setFilters((prev) => { prev[filter].add(v); return {...prev};});
+          setFilters((prev) => { prev[filter].delete(v); return {...prev};});
         }
     }
-    
-    console.log(filters);
-    console.log(filters[FILTER_SIZE].has('S'));
+    // console.log("filters : ");
+    // console.log(filters);
+    //console.log(filters[FILTER_SIZE].has('S'));
   }
  
  

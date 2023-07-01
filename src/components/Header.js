@@ -10,7 +10,6 @@ function Header({cartSize, setShowCart, changeSearchString}) {
     const [searchStringPlaceHolder, setSearchStringPlaceHolder] = useState('');
     
     function onKeyUpFromSearch(event){
-        console.log(event.key);
         if(event.key==='Enter'){
             changeSearchString(searchStringPlaceHolder);
         }

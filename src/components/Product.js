@@ -20,8 +20,6 @@ function Product({cart, setCart, productInfo}) {
         })
         .then(data => {
           setProduct(data[0]);
-          console.log("AA");
-          console.log(data);
           setLoaded(true);
         })
     }
@@ -33,17 +31,11 @@ function Product({cart, setCart, productInfo}) {
     
     useEffect(() => {
       fetchProductData(productInfo.product_id);
-      console.log("AA");
     },[productInfo.product_id]);
 
     function addItemToCartHandler(){
       
-      console.log(selectedQuantity);
-      console.log(product.product_id);
-      console.log(selectedSize);
       var productSku = product.product_id.toString() + '#' + selectedSize.toString();
-      console.log("typeof")
-      console.log(typeof(productSku))
       var newCartItem = {};
       if(cart[productSku]){
         newCartItem = {...cart[productSku], quantity: cart[productSku].quantity + parseInt(selectedQuantity)};

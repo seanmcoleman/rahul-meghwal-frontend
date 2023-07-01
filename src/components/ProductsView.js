@@ -28,8 +28,6 @@ function ModalProductCard({cart, setCart,product,setSelectedProduct}) {
             </MDBModalHeader>
             <MDBModalBody>
               <Product cart={cart} setCart={setCart} key={product.product_id} productInfo={product}/>
-              {console.log("cart")}
-              {console.log(cart)}
             </MDBModalBody>
           </MDBModalContent>
         </MDBModalDialog>
