@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import ProductsView from './ProductsView';
 import FilterView from './FilterView';
 import Cart from './Cart';
-
+import * as CONSTANT from '../constants/filterConstants'
 
 import {
   MDBBtn,
@@ -14,9 +14,7 @@ import {
   MDBModalBody,
 } from 'mdb-react-ui-kit';
 
-
 function ModalCart({showCart,setShowCart,cart,setCart}) {
-  // const [scrollableModal, setScrollableModal] = useState(true);
   
   return (
       <MDBModal className="custom-modal" show={showCart} setShow={setShowCart} tabIndex='-1'>
@@ -39,121 +37,162 @@ function ModalCart({showCart,setShowCart,cart,setCart}) {
   );
 }
 
+
 function Content({showCart, setShowCart,searchString}) {
   
+  const initialFilterState = {
+    [CONSTANT.FILTER_BRAND]     : [],
+    [CONSTANT.FILTER_IDEAL_FOR] : [],
+    [CONSTANT.FILTER_SIZE]      : [],
+    [CONSTANT.FILTER_MIN_PRICE] : 0,
+    [CONSTANT.FILTER_MAX_PRICE] : 1000
+  };
+  
+
+  const [state, setState] = useState({
+    filters : initialFilterState,
+    searchString : searchString,
+    pageNo : 1
+  });
+
+  const productsPerPage = 100;
+  const initialRender = useRef(true);
+
   const [products, setProducts] = useState([]);
-  const [filters, setFilters] = useState({});
+  const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState({});
-  const [resultMessage, setResultMessage] = useState('Showing All Products');
-  const [pageNo, setPageNo] = useState(1);
-
-  const fetchProductsData = (page,filters,searchString) => {
-    var brands = filters.brand ? Array.from(filters.brand) : [];
-    var params = { brand: brands, searchString:searchString};
-    var url = '?' + ( new URLSearchParams( params ) ).toString();
-    
-    fetch("http://3.86.87.11:8080/getProducts/" + page + url)
-      .then(response => {
-        return response.json()
-      })
-      .then(data => {
-        setProducts(data);
-      })
-      .catch(err => {
-        console.log(err.message);
-      })
-
-      return () => {
-        // cleanup here
-      };
-  }
+  const [resultMessage, setResultMessage] = useState('Showing All Products.');
+  const [totalProducts, setTotalProducts] = useState(0);
   
-  useEffect(() => {
-    fetchProductsData(1,{},"");
-    setPageNo(1);
-  },[]);
-
-  useEffect(() => {
-    fetchProductsData(1,filters,searchString);
-    setPageNo(1);
+  const fetchProductsData = async (page,filters,searchString) => {
+    const brands = filters.brand ? filters.brand : [];
+    const params = { brand: brands, searchString: searchString};
+    const urlParams = new URLSearchParams(params).toString();
     
-    if(searchString !== ''){  
-      setResultMessage("Showing results for '" + searchString + "' with below filters.");
-    } else {
-      setResultMessage("Showing producs with below filters.");
+    const response = await fetch(`http://3.86.87.11:8080/getProducts/${page}?${urlParams}`)
+    if(!response.ok){
+      throw new Error(`An error has occured: ${response.status}`);
     }
+    const products = await response.json();
+    return products;
+
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    fetchProductsData(state.pageNo,state.filters,state.searchString)
+      .then((products)=> {
+        setProducts(products.data);
+        setTotalProducts(products.total_records)
+      })
+      .catch((error)=>{console.log(error.resultMessage)})
+      .finally(()=>{
+        setLoading(false);
+        window.scrollTo(0, 0);
+      });
+      setResultMessage(`Showing results ${state.searchString.length > 0 ? ` for '${state.searchString}'` : `` } with below filters.`);
+      return () => {
+        setLoading(false);
+      }
+
+  },[state]);
+
+  const handleFilterUpdate = (filters) => {
+    setState((prev)=> ({...prev, filters:filters, pageNo:1}));
+  }
+
+  const handlePageUpdate = (pageNo) => {
     
-  },[searchString,filters]);
+    setState((prev)=> ({...prev, pageNo:pageNo}));
+  }
 
-  useEffect(() => {
-    fetchProductsData(1,filters,searchString);
-  },[filters,searchString]);
+  useEffect(()=>{
+    if (initialRender.current) {
+      initialRender.current = false;
+    } else {
+      setState((prev)=> ({...prev, searchString:searchString}));
+    }
+  },[searchString]);
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pageNo]);
-
-  
-  
+  const getRangeForPage = () => {
+    const start = Math.floor((state.pageNo-1)/5)*5 + 1;
+    const range = [...Array(5).keys()].map(x => (x + start));
+    return range;
+  }
 
   return (
     
     <>
       <div className="container-fluid mt-5 py-4 px-4">
-        <nav aria-label="breadcrumb" className="bg-custom-light">
-          <ol className="breadcrumb p-3 mb-0">
+        <div className="search-result-info">
+          <ol className="p-3 mb-0">
             {resultMessage}
           </ol>
-        </nav>
+          </div>
         <div className="row mb-0 mt-lg-3">
           <div className="col-lg-2">
             <div className="border shadow-sm flex-column">
-                <FilterView updateFilters = {setFilters}/>
+                <FilterView loading={loading} filters = {state.filters} updateFilters = {handleFilterUpdate}/>
             </div>
           </div>
           <div className="col-lg-10">
-            {products.length > 0 ?
-            <>
-            <div className="d-flex flex-column">
-              <ProductsView cart={cart} setCart={setCart} products={products}/>
-            </div>
-            <div className="d-flex align-items-center mt-auto">
-              <span className="text-muted small d-none d-md-inline">
-                Showing {products.length} of 1224
-              </span>
-              <nav aria-label="Page navigation example" className="ms-auto">
-                <ul className="custom-page-bar pagination my-0">
-                  <li className="page-item">
-                  <button className="page-link" onClick={()=> {setPageNo((prev)=>prev-1)}}>
-                      Previous
-                    </button>
-                  </li>
-                  <li className="page-item active">
-                  <button className="page-link" onClick={()=> {}}>
-                      {pageNo}
-                    </button>
-                  </li>
-                  <li className="page-item">
-                  <button className="page-link" onClick={()=> {setPageNo((prev)=>prev+1)}}>
-                    {pageNo+1}
-                    </button>
-                  </li>
-                  <li className="page-item">
-                  <button className="page-link" onClick={()=> {setPageNo((prev)=>prev+2)}}>
-                    {pageNo+2}
-                    </button>
-                  </li>
-                  <li className="page-item">
-                  <button className="page-link" onClick={()=> {setPageNo((prev)=>prev+3)}}>
-                      Next
-                  </button>
-                  </li>
-                </ul>
-              </nav>
-            </div>
-            </>
-            :
-            "No Results."
+            { loading ?
+              <>
+                <div className="loading-text">
+                  <h5>Loading Products ...</h5>
+                </div>
+              </>
+              :
+              <>
+                {products.length > 0 ?
+                <>
+                <div className="d-flex flex-column">
+                  <ProductsView cart={cart} setCart={setCart} products={products}/>
+                </div>
+                <div className="d-flex align-items-center mt-auto">
+                  <span className="text-muted small d-none d-md-inline">
+                    Showing {(state.pageNo-1)*productsPerPage + 1} - {(state.pageNo-1)*productsPerPage + products.length} of {totalProducts}
+                  </span>
+                  <nav aria-label="Page navigation example" className="ms-auto">
+                    <ul className="custom-page-bar pagination my-0">
+                      <li className="page-item">
+                      <button 
+                        className="page-link"
+                        title={ state.pageNo === 1 ? `` : `Go to page ${state.pageNo-1}`}
+                        disabled={state.pageNo === 1} 
+                        onClick={()=> {handlePageUpdate(state.pageNo-1)}}>
+                          {"<"}
+                        </button>
+                      </li>
+                      {getRangeForPage().map((page)=>
+                        <li className={`page-item ${page===state.pageNo ? `active` : ``}`}>
+                          <button className="page-link" 
+                            title={`Go to page ${page}`} 
+                            hidden={totalProducts <= ((page-1)*productsPerPage)} 
+                            onClick={()=> {handlePageUpdate(page)}}>
+                            {page}
+                          </button>
+                        </li>
+                      )}
+                      
+                      <li className="page-item">
+                        <button className="page-link" 
+                          title={`Go to page ${state.pageNo+1}`}
+                          disabled={totalProducts <= ((state.pageNo)*productsPerPage)} 
+                          onClick={()=> {handlePageUpdate(state.pageNo+1)}}>
+                          {">"}
+                        </button>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+                </>
+                :
+                <div className="no-results-text">
+                  <h5>No Results.</h5>
+                </div>
+                }
+              </>
             }
           </div>
         </div>
@@ -166,3 +205,26 @@ function Content({showCart, setShowCart,searchString}) {
   );
 }
 export default Content;
+
+
+/* <li className="page-item active">
+                        <button className="page-link" onClick={()=> {}}>
+                          {state.pageNo}
+                        </button>
+                      </li>
+                      <li className="page-item">
+                        <button className="page-link"
+                          title={`Go to page ${state.pageNo+1}`} 
+                          disabled={totalProducts <= ((state.pageNo-1)*productsPerPage + products.length)} 
+                          onClick={()=> {handlePageUpdate(state.pageNo+1)}}>
+                          {state.pageNo+1}
+                        </button>
+                      </li>
+                      <li className="page-item">
+                        <button className="page-link" 
+                          title={`Go to page ${state.pageNo+2}`}
+                          disabled={totalProducts <= ((state.pageNo)*productsPerPage + products.length)} 
+                          onClick={()=> {handlePageUpdate(state.pageNo+2)}}>
+                          {state.pageNo+2}
+                          </button>
+                        </li> */

@@ -1,12 +1,13 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export default function Cart({cart, setCart}) {
 
     const [purchaseValue, setPurchaseValue] = useState(0);
 
     function handleUpdateQuantity(value, key){
-        setCart((prev)=>({...prev,[key]:{...prev[key], quantity:value}}));
+        const cartQuantity = value < 1 ? 1 : value;
+        setCart((prev)=>({...prev,[key]:{...prev[key], quantity:cartQuantity}}));
     }
 
     function handleDeleteCartItem(key){
@@ -14,14 +15,11 @@ export default function Cart({cart, setCart}) {
     }
     
     useEffect(()=>{
-        var cartValue = 0;
-        if(cart && Object.keys(cart).length !== 0){
-            Object.keys(cart).map((k)=> {
-                cartValue += cart[k].price * cart[k].quantity;
-            });
-            setPurchaseValue(cartValue);
-        }
+        const cartValue = Object.keys(cart)
+            .map((k)=> {return cart[k].price * cart[k].quantity;})
+            .reduce((cartTotal, itemTotal)=> cartTotal + itemTotal, 0);
 
+        setPurchaseValue(cartValue);
     },[cart]);
     
     return (<div className="row">
@@ -48,13 +46,16 @@ export default function Cart({cart, setCart}) {
                                                 <p>{cart[k].title}</p>
                                             </div>
                                             <div className="row cart-item-details cart-item-price">
-                                                <p><b>${cart[k].price}</b></p>
+                                                <p><span>Price</span> : <span><b>${cart[k].price}</b></span></p>
                                             </div>
                                             <div className="row cart-item-details cart-item-size">
                                                 <p><span>Size</span> : <span><b>{cart[k].size}</b></span></p>
                                             </div>
                                             <div className="row cart-item-details cart-item-quantity">
                                                 <p><span>Quantity</span> : <span><input className="cart-item-quantity-field" type="number" value={cart[k].quantity} onChange={(e)=>handleUpdateQuantity(e.target.value, k)}></input></span></p>
+                                            </div>
+                                            <div className="row cart-item-details cart-item-price">
+                                            <p><span>Total Price</span> : <span><b>${(cart[k].price*cart[k].quantity).toFixed(2)}</b></span></p>
                                             </div>
                                         </div>
                                         <div className="col-lg-1 ">

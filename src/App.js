@@ -13,17 +13,10 @@ const [searchString, setSearchString] = useState('');
   return (
       <>
         <Header changeSearchString = {setSearchString} setShowCart={setShowCart}/>
-        {/* <ProductsView searchString={searchString}/> */}
-        {/* <Content> */}
         <Content searchString={searchString} showCart={showCart} setShowCart={setShowCart}/>
         <Routes>
-          {/* <Route exact path='/' element={< ProductsView searchString={this.searchString}/>}></Route> */}
-          {/* <Route exact path='/' element={<Content searchString={searchString}/>}></Route> */}
-          {/* <Route exact path='/product/:productId' element={< Product changeSearchString = {setSearchString}/>}></Route> */}
-          {/* <Route exact path='/modalDemo' element={< ModalDemo />}></Route> */}
           <Route path="*" element={<Navigate to="/" />}></Route>
         </Routes>
-        {/* </Content> */}
       </>
    );
 }

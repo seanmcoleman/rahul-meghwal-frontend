@@ -10,7 +10,7 @@ function ProductCard({product, setSelectedProduct,setScrollableModal}) {
             <div className="card custom-card shadow-sm" onClick={() => {setSelectedProduct(product); setScrollableModal(true);}}>
                 { product.variant_price < product.variant_compare_at_price ?
                     <p className="badge bg-dim text-white position-absolute"
-                            style={{ bottom: "10rem", right: "0.5rem" }}>
+                            style={{ bottom: "12rem", right: "0.5rem" }}>
                             {getDiscount(product.variant_price,product.variant_compare_at_price)}% OFF
                     </p>
                     :

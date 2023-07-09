@@ -25,8 +25,8 @@ function Product({cart, setCart, productInfo}) {
     }
 
     function getDiscount(newPrice, oldPrice){
-      var diff = oldPrice - newPrice;
-      return Math.round(diff*100/oldPrice);
+      const discount = Math.round((oldPrice - newPrice)*100/oldPrice);
+      return discount;
     }
     
     useEffect(() => {
@@ -35,13 +35,11 @@ function Product({cart, setCart, productInfo}) {
 
     function addItemToCartHandler(){
       
-      var productSku = product.product_id.toString() + '#' + selectedSize.toString();
-      var newCartItem = {};
-      if(cart[productSku]){
-        newCartItem = {...cart[productSku], quantity: cart[productSku].quantity + parseInt(selectedQuantity)};
-      } else {
-        newCartItem = {size:selectedSize, quantity:parseInt(selectedQuantity), image:product.images.split('|')[0], title:product.title, price:product.variant_price};
-      }
+      const productSku = product.product_id.toString() + '#' + selectedSize.toString();
+      const newCartItem = cart[productSku] ? 
+        {...cart[productSku],quantity: cart[productSku].quantity + parseInt(selectedQuantity)}
+        :
+        {size:selectedSize, quantity:parseInt(selectedQuantity), image:product.images.split('|')[0], title:product.title, price:product.variant_price};
       setCart((prev)=>({...prev , [productSku]:newCartItem}));
       toast.success("Added to cart !",{autoClose:1000});
     }
