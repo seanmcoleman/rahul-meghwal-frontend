@@ -1,6 +1,7 @@
+import Product from "./Product";
 import { useState } from "react";
 import ProductCard from "./ProductCard";
-import Product from "./Product";
+
 import {
   MDBBtn,
   MDBModal,
@@ -12,7 +13,6 @@ import {
 } from 'mdb-react-ui-kit';
 
 function ModalProductCard({cart, setCart,product,setSelectedProduct,scrollableModal, setScrollableModal}) {
-  
   
   return (
       <MDBModal className="custom-modal" show={scrollableModal} setShow={setScrollableModal} tabIndex='-1'>

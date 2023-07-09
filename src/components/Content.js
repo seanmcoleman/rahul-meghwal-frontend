@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from 'react';
-import ProductsView from './ProductsView';
-import FilterView from './FilterView';
 import Cart from './Cart';
+import FilterView from './FilterView';
+import ProductsView from './ProductsView';
+import { useEffect, useState, useRef } from 'react';
 import * as CONSTANT from '../constants/filterConstants'
 
 import {
@@ -205,26 +205,3 @@ function Content({showCart, setShowCart,searchString}) {
   );
 }
 export default Content;
-
-
-/* <li className="page-item active">
-                        <button className="page-link" onClick={()=> {}}>
-                          {state.pageNo}
-                        </button>
-                      </li>
-                      <li className="page-item">
-                        <button className="page-link"
-                          title={`Go to page ${state.pageNo+1}`} 
-                          disabled={totalProducts <= ((state.pageNo-1)*productsPerPage + products.length)} 
-                          onClick={()=> {handlePageUpdate(state.pageNo+1)}}>
-                          {state.pageNo+1}
-                        </button>
-                      </li>
-                      <li className="page-item">
-                        <button className="page-link" 
-                          title={`Go to page ${state.pageNo+2}`}
-                          disabled={totalProducts <= ((state.pageNo)*productsPerPage + products.length)} 
-                          onClick={()=> {handlePageUpdate(state.pageNo+2)}}>
-                          {state.pageNo+2}
-                          </button>
-                        </li> */

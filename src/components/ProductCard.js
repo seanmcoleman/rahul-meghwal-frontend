@@ -37,9 +37,6 @@ function ProductCard({product, setSelectedProduct,setScrollableModal}) {
                     Available In
                 </p>
                 <div className="d-grid d-block text-center ">
-                    {/* <button className="btn btn-outline-dark mt-3">
-                    <FontAwesomeIcon icon={["fas", "cart-plus"]} /> Add to cart
-                    </button> */}
                     <p className="available-sizes ">{product.size.split("|").map( 
                         size => (size.length < 3 || product.size.length < 12) ? <span key={size} className="btn available-size-button btn-outline-dark size-buttons text-dark bg-light ">{size}</span> : ''
                         )}

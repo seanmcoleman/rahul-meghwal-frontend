@@ -1,7 +1,7 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { faShoppingCart } from '@fortawesome/fontawesome-free-solid';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
 
@@ -41,7 +41,6 @@ function Header({cartSize, setShowCart, changeSearchString}) {
                     <button type="button" className="btn show-cart-button btn-warning text-dark me-3 d-inline" onClick={()=>{setShowCart(true)}}>
                                 {" Cart "}
                                 <FontAwesomeIcon icon={faShoppingCart} />
-                                {/* <span className="ms-3 badge">{" "}</span> */}
                                 {' '}
                                 <span className="navbar-toggler-icon"></span>
                     </button>
